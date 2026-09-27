@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Folio — Sign in</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pine:#1B2A22;
+    --pine-2:#2F4A3D;
+    --cream:#F5F1E6;
+    --brass:#C89B5C;
+    --ink:#2B2A26;
+    --ink-soft:#6B6A62;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--pine);
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100%;
+    padding:24px;
+  }
+  .wrap{
+    width:100%;
+    max-width:920px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    background:var(--cream);
+    border-radius:6px;
+    overflow:hidden;
+    box-shadow:0 30px 60px rgba(0,0,0,.35);
+  }
+  @media (max-width:720px){
+    .wrap{grid-template-columns:1fr;}
+    .spines{display:none;}
+  }
+  .spines{
+    background:var(--pine-2);
+    display:flex;
+    align-items:flex-end;
+    padding:40px 28px;
+    position:relative;
+  }
+  .spines .brand{
+    position:absolute;
+    top:36px;
+    left:28px;
+    font-family:'Lora',serif;
+    font-weight:600;
+    font-size:22px;
+    color:var(--cream);
+    letter-spacing:.02em;
+  }
+  .shelf{
+    display:flex;
+    gap:6px;
+    align-items:flex-end;
+    width:100%;
+    height:280px;
+  }
+  .shelf div{
+    border-radius:2px 2px 0 0;
+    flex:1;
+  }
+  .tagline{
+    font-family:'Lora',serif;
+    font-style:italic;
+    color:var(--cream);
+    opacity:.85;
+    font-size:15px;
+    line-height:1.5;
+    position:absolute;
+    bottom:36px;
+    left:28px;
+    right:28px;
+  }
+  .panel{
+    padding:52px 44px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  .panel h1{
+    font-family:'Lora',serif;
+    font-weight:600;
+    font-size:28px;
+    margin:0 0 6px;
+    color:var(--ink);
+  }
+  .panel p.sub{
+    margin:0 0 30px;
+    color:var(--ink-soft);
+    font-size:14.5px;
+  }
+  label{
+    display:block;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+    font-weight:500;
+  }
+  .field{margin-bottom:18px;}
+  input[type="email"],input[type="password"]{
+    width:100%;
+    padding:11px 13px;
+    border:1px solid #DDD7C8;
+    border-radius:4px;
+    background:#FFFEFB;
+    font-family:'Inter',sans-serif;
+    font-size:14.5px;
+    color:var(--ink);
+    outline:none;
+    transition:border-color .15s ease;
+  }
+  input:focus{border-color:var(--brass);}
+  .row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:2px 0 22px;
+    font-size:13px;
+  }
+  .row a{color:var(--pine-2);text-decoration:none;}
+  .row a:hover{text-decoration:underline;}
+  .remember{display:flex;align-items:center;gap:7px;color:var(--ink-soft);}
+  button.submit{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:4px;
+    background:var(--pine);
+    color:var(--cream);
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14.5px;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  button.submit:hover{background:var(--pine-2);}
+  .foot{
+    margin-top:22px;
+    font-size:13.5px;
+    color:var(--ink-soft);
+    text-align:center;
+  }
+  .foot a{color:var(--brass);text-decoration:none;font-weight:600;}
+  .foot a:hover{text-decoration:underline;}
+  .msg{
+    display:none;
+    font-size:13px;
+    padding:9px 12px;
+    border-radius:4px;
+    margin-bottom:16px;
+  }
+  .msg.error{background:#F7E4E1;color:#8A3B2C;}
+  .msg.ok{background:#E1EBE3;color:#2F4A3D;}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="spines">
+      <div class="brand">Folio</div>
+      <div class="shelf" id="shelf"></div>
+      <p class="tagline">Every book you've borrowed, renewed, or meant to finish — in one place.</p>
+    </div>
+    <div class="panel">
+      <h1>Welcome back</h1>
+      <p class="sub">Sign in to see your borrowed books and holds.</p>
+
+      <div class="msg error" id="errorMsg">That email and password don't match our records.</div>
+      <div class="msg ok" id="okMsg">Signed in — redirecting to your shelf.</div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="you@example.com" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+        <div class="row">
+          <label class="remember"><input type="checkbox" id="remember"> Keep me signed in</label>
+          <a href="#">Forgot password?</a>
+        </div>
+        <button type="submit" class="submit">Sign in</button>
+      </form>
+      <p class="foot">New to Folio? <a href="#">Create an account</a></p>
+    </div>
+  </div>
+
+<script>
+  // Decorative bookshelf: bars of varying height/color, like spines
+  const colors = ['#C89B5C','#8B4A3E','#4C6B54','#D9C27E','#5A4A6B','#B5654A','#3F5A4C'];
+  const shelf = document.getElementById('shelf');
+  for(let i=0;i<14;i++){
+    const bar = document.createElement('div');
+    const h = 60 + Math.random()*180;
+    bar.style.height = h+'px';
+    bar.style.background = colors[i % colors.length];
+    shelf.appendChild(bar);
+  }
+
+  const form = document.getElementById('loginForm');
+  const errorMsg = document.getElementById('errorMsg');
+  const okMsg = document.getElementById('okMsg');
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    errorMsg.style.display = 'none';
+    okMsg.style.display = 'none';
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    // Demo-only check. Replace with a real auth call in production.
+    if(email.length > 3 && password.length >= 4){
+      okMsg.style.display = 'block';
+    } else {
+      errorMsg.style.display = 'block';
+    }
+  });
+</script>
+</body>
+</html>

@@ -229,6 +229,7 @@ class _LoginPageState extends State<LoginPage> {
           TextFormField(
             controller: _emailCtrl,
             keyboardType: TextInputType.emailAddress,
+            style: const TextStyle(color: ink, fontSize: 14.5),
             decoration: _decoration('Email'),
             validator: (v) =>
                 (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
@@ -239,6 +240,7 @@ class _LoginPageState extends State<LoginPage> {
               return TextFormField(
                 controller: _passwordCtrl,
                 obscureText: _obscure,
+                style: const TextStyle(color: ink, fontSize: 14.5),
                 decoration: _decoration('Password').copyWith(
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -378,18 +380,6 @@ class _BrandPanel extends StatelessWidget {
             'Technology · Excellence · Commitment',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 11.5, color: Color(0xCCFBF8F1)),
-          ),
-          const SizedBox(height: 28),
-          const Text(
-            'Browse the catalog, track your holds, and renew books — all from one place.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'serif',
-              fontStyle: FontStyle.italic,
-              fontSize: 14,
-              height: 1.6,
-              color: cream,
-            ),
           ),
         ],
       ),
@@ -533,6 +523,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _searchOpen = false;
+  bool _wideMenuOpen = false; // laptop layout: menu rail hidden until tapped
   final _searchCtrl = TextEditingController();
 
   @override
@@ -630,6 +621,8 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         titleSpacing: 0,
+        // Search button sits in AppBar's `actions` slot — pinned to the
+        // far-right edge, the standard Material placement.
         title: _searchOpen
             ? TextField(
                 controller: _searchCtrl,
@@ -675,28 +668,8 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Column(
           children: [
-            // Quick nav row — same shortcuts as the menu
-            SizedBox(
-              height: 44,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                children: [
-                  for (final item in _menuItems)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: ActionChip(
-                        backgroundColor: Colors.white,
-                        side: const BorderSide(color: Color(0xFFE2DFD2)),
-                        label: Text(item.label,
-                            style: const TextStyle(fontSize: 12.5, color: ink)),
-                        onPressed: () => _openMenuItem(item.label),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            const Divider(height: 1, color: Color(0xFFE2DFD2)),
+            // Menu options now live only behind the hamburger/drawer above —
+            // the home body starts straight into the book sections.
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(18, 16, 18, 20),
@@ -723,45 +696,49 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Row(
           children: [
-            NavigationRail(
-              extended: true,
-              minExtendedWidth: 220,
-              backgroundColor: cream,
-              selectedIndex: selected < 0 ? 0 : selected,
-              onDestinationSelected: (i) => _openMenuItem(_menuItems[i].label),
-              leading: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                child: Column(
-                  children: [
-                    ClipOval(
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        color: Colors.white,
-                        padding: const EdgeInsets.all(3),
-                        child: Image.memory(logoBytes, fit: BoxFit.contain),
+            // Rail only takes up space once the menu icon has been tapped.
+            if (_wideMenuOpen) ...[
+              NavigationRail(
+                extended: true,
+                minExtendedWidth: 220,
+                backgroundColor: cream,
+                selectedIndex: selected < 0 ? 0 : selected,
+                onDestinationSelected: (i) =>
+                    _openMenuItem(_menuItems[i].label),
+                leading: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  child: Column(
+                    children: [
+                      ClipOval(
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          color: Colors.white,
+                          padding: const EdgeInsets.all(3),
+                          child: Image.memory(logoBytes, fit: BoxFit.contain),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text('Library',
-                        style: TextStyle(
-                            fontFamily: 'serif',
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                            color: forest)),
-                  ],
-                ),
-              ),
-              destinations: [
-                for (final item in _menuItems)
-                  NavigationRailDestination(
-                    icon: Icon(item.icon, color: forest),
-                    selectedIcon: Icon(item.icon, color: forest),
-                    label: Text(item.label),
+                      const SizedBox(height: 8),
+                      const Text('Library',
+                          style: TextStyle(
+                              fontFamily: 'serif',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                              color: forest)),
+                    ],
                   ),
-              ],
-            ),
-            const VerticalDivider(width: 1, color: Color(0xFFE2DFD2)),
+                ),
+                destinations: [
+                  for (final item in _menuItems)
+                    NavigationRailDestination(
+                      icon: Icon(item.icon, color: forest),
+                      selectedIcon: Icon(item.icon, color: forest),
+                      label: Text(item.label),
+                    ),
+                ],
+              ),
+              const VerticalDivider(width: 1, color: Color(0xFFE2DFD2)),
+            ],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -770,6 +747,12 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.fromLTRB(28, 22, 28, 14),
                     child: Row(
                       children: [
+                        IconButton(
+                          icon: const Icon(Icons.menu, color: forest),
+                          onPressed: () =>
+                              setState(() => _wideMenuOpen = !_wideMenuOpen),
+                        ),
+                        const SizedBox(width: 4),
                         const Text(
                           'Library Books',
                           style: TextStyle(

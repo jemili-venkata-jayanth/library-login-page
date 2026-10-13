@@ -278,7 +278,7 @@ class _BrandPanel extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.12),
+                  color: const Color.fromRGBO(0, 0, 0, 0.12),
                   blurRadius: 40,
                   offset: const Offset(0, 16),
                 ),
